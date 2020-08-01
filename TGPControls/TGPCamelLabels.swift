@@ -49,6 +49,13 @@ public class TGPCamelLabels: UIControl {
             layoutTrack()
         }
     }
+    
+    @IBInspectable public var maxTick:Int = 0 {
+        didSet {
+            //assert(maxTick > 0)
+            layoutTrack()
+        }
+    }
 
     @IBInspectable public var ticksDistance:CGFloat = 44.0 {
         didSet {
@@ -94,6 +101,12 @@ public class TGPCamelLabels: UIControl {
     }
 
     @IBInspectable public var downFontColor:UIColor? = nil {
+        didSet {
+            layoutTrack()
+        }
+    }
+    
+    @IBInspectable public var greyedFontColor:UIColor? = nil {
         didSet {
             layoutTrack()
         }
@@ -166,6 +179,8 @@ public class TGPCamelLabels: UIControl {
             layoutTrack()
         }
     }
+    
+    
 
     // When bounds change, recalculate layout
     override public var bounds: CGRect {
@@ -211,6 +226,9 @@ public class TGPCamelLabels: UIControl {
 
     func initProperties() {
         debugNames(count: 10)
+        if maxTick == 0 {
+            maxTick = names.count
+        }
         layoutTrack()
     }
 
@@ -250,6 +268,7 @@ public class TGPCamelLabels: UIControl {
         if count > 0 {
             var centerX = (bounds.width - (CGFloat(count - 1) * ticksDistance))/2.0
             let centerY = bounds.height / 2.0
+            var currCount = 0
             for name in names {
                 let upLabel = UILabel.init()
                 emphasizedLabels.append(upLabel)
@@ -282,7 +301,11 @@ public class TGPCamelLabels: UIControl {
                 } else {
                     dnLabel.font = UIFont.boldSystemFont(ofSize: downFontSize)
                 }
-                dnLabel.textColor = downFontColor ?? UIColor.gray
+                if currCount < maxTick {
+                    dnLabel.textColor = downFontColor ?? UIColor.gray
+                } else {
+                    dnLabel.textColor = greyedFontColor ?? UIColor(red: 233/255, green: 233/255, blue: 233/255, alpha: 1.0)
+                }
                 dnLabel.sizeToFit()
                 dnLabel.center = CGPoint(x:centerX, y:centerY)
                 dnLabel.frame = {
@@ -293,6 +316,7 @@ public class TGPCamelLabels: UIControl {
                 addSubview(dnLabel)
 
                 centerX += ticksDistance
+                currCount += 1
             }
 
             // Fix left and right label, if there are at least 2 labels

@@ -172,6 +172,16 @@ public class TGPDiscreteSlider:TGPSlider_INTERFACE_BUILDER {
             layoutTrack()
         }
     }
+    
+    @IBInspectable public var maximumValue:CGFloat {
+        get {
+            return CGFloat(intMaximumValue)
+        }
+        set {
+            intMaximumValue = Int(newValue)
+            layoutTrack()
+        }
+    }
 
     @IBInspectable public var value:CGFloat {
         get {
@@ -244,6 +254,7 @@ public class TGPDiscreteSlider:TGPSlider_INTERFACE_BUILDER {
 
     var intValue:Int = 0
     var intMinimumValue = -5
+    var intMaximumValue = 11
 
     var ticksAbscisses:[CGPoint] = []
     var thumbAbscisse:CGFloat = 0
@@ -280,6 +291,7 @@ public class TGPDiscreteSlider:TGPSlider_INTERFACE_BUILDER {
         // Automatic UIControlEventValueChanged notification
         if let ticksListener = ticksListener {
             ticksListener.tgpValueChanged(value: UInt(value-minimumValue))
+            //ticksListener.tgpValueChanged(value: UInt(min(value-minimumValue, maximumValue)))
         }
     }
 
@@ -679,7 +691,7 @@ public class TGPDiscreteSlider:TGPSlider_INTERFACE_BUILDER {
     func moveThumbToTick(tick: UInt) {
         let nonZeroIncrement = ((0 == incrementValue) ? 1 : incrementValue)
         let intValue = Int(minimumValue) + (Int(tick) * nonZeroIncrement)
-        if intValue != self.intValue {
+        if intValue != self.intValue && intValue < intMaximumValue {
             self.intValue = intValue
             sendActionsForControlEvents()
         }
@@ -698,7 +710,7 @@ public class TGPDiscreteSlider:TGPSlider_INTERFACE_BUILDER {
         let tick = pickTickFromSliderPosition(abscisse: thumbAbscisse)
         let nonZeroIncrement = ((0 == incrementValue) ? 1 : incrementValue)
         let intValue = Int(minimumValue) + (Int(tick) * nonZeroIncrement)
-        if intValue != self.intValue {
+        if intValue != self.intValue && intValue < intMaximumValue {
             self.intValue = intValue
             sendActionsForControlEvents()
         }
